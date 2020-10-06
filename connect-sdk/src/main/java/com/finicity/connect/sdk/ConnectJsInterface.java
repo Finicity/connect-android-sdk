@@ -3,6 +3,7 @@ package com.finicity.connect.sdk;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.customtabs.CustomTabsIntent;
 import android.webkit.JavascriptInterface;
 
 import org.json.JSONObject;
@@ -70,5 +71,13 @@ class ConnectJsInterface {
     public void openLinkInBrowser(String url) {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         activity.startActivity(browserIntent);
+    }
+
+    @JavascriptInterface
+    public void openLinkInCustomTab(String url) {
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        customTabsIntent.launchUrl(this.activity, Uri.parse(url));
     }
 }

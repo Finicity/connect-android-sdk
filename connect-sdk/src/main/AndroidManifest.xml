@@ -3,7 +3,14 @@
     package="com.finicity.connect.sdk">
 
     <application>
-        <activity android:name=".Connect"></activity>
+        <activity android:name=".Connect" android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="connect" android:host="resume.connect.sdk" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
