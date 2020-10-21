@@ -1,9 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
-
-def artifactId = 'connect-sdk'
-def groupId = 'com.finicity.connect'
-def version = '0.0.1-SNAPSHOT'
 
 android {
     compileSdkVersion 28
@@ -35,29 +30,6 @@ android {
 
 }
 
-publishing {
-    repositories {
-        mavenLocal()
-        maven {
-            name "libs-release-local"
-            url "https://repo.finicity.com/artifactory/libs-release-local"
-            credentials {
-                username System.getenv("MAVEN_REPO_USER")
-                password System.getenv("MAVEN_REPO_PASS")
-            }
-        }
-
-        maven {
-            name "libs-snapshot-local"
-            url "https://repo.finicity.com/artifactory/libs-snapshot-local"
-            credentials {
-                username System.getenv("MAVEN_REPO_USER")
-                password System.getenv("MAVEN_REPO_PASS")
-            }
-        }
-    }
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -70,18 +42,4 @@ dependencies {
 
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-}
-
-project.afterEvaluate {
-    publishing {
-        publications {
-            library(MavenPublication) {
-                setGroupId groupId
-                setArtifactId artifactId
-                setVersion version
-
-                artifact bundleReleaseAar
-            }
-        }
-    }
 }
