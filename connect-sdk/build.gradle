@@ -1,6 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
 
 jacoco {
@@ -45,10 +43,6 @@ task jacocoTestReport(type: JacocoReport) {
 }
 
 apply from: "$project.rootDir/sonar.gradle"
-
-def libraryGroupId = 'com.finicity.connect'
-def libraryArtifactId = 'connect-sdk'
-def libraryVersion = '1.0.5'
 
 android {
     compileSdkVersion 28
@@ -98,79 +92,10 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-web:3.0.2'
 }
 
-task androidSourcesJar(type: Jar) {
-    archiveClassifier.set("sources")
-    from android.sourceSets.main.java.srcDirs
-}
-
-project.afterEvaluate {
-    publishing {
-        publications {
-            library(MavenPublication) {
-                groupId libraryGroupId
-                artifactId libraryArtifactId
-                version libraryVersion
-                artifact androidSourcesJar
-                artifact bundleReleaseAar
-
-                pom.withXml {
-                    def dependenciesNode = asNode().appendNode('dependencies')
-                    configurations.implementation.allDependencies.each {
-                        if (it.name != 'unspecified') {
-                            def dependencyNode = dependenciesNode.appendNode('dependency')
-                            dependencyNode.appendNode('groupId', it.group)
-                            dependencyNode.appendNode('artifactId', it.name)
-                            dependencyNode.appendNode('version', it.version)
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-/*
-    To clean, build aar, generate pom, and to upload aar/pom to bintray issue the following command from terminal.
-    ./gradlew connect-sdk:clean connect-sdk:assembleRelease connect-sdk:generatePomFileForLibraryPublication connect-sdk:bintrayUpload
- */
-
-// Bintray properties for accessing bintray.  If we open source then move to local.properties
-// or gradle.properties that is not in source code control
-
 ext {
-    bintrayOrg = "finicity"
-    bintrayRepo = "connect-android-sdk"
-    bintrayPackage = "com.finicity.connect"
-    bintrayPackageDesc = "Connect Android SDK"
-    bintrayPackageVcsUrl = "https://github.com/Finicity/connect-android-sdk.git"
+    PUBLISH_GROUP_ID = 'com.finicity.connect'
+    PUBLISH_VERSION = '1.0.5'
+    PUBLISH_ARTIFACT_ID = 'connect-sdk'
 }
 
-/*
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-*/
-
-bintray {
-/*
-    user = properties.getProperty('bintrayUser')
-    key = properties.getProperty('bintrayApiKey')
-*/
-    user = System.getenv('BINTRAY_USER') // Get bintray User
-    key = System.getenv('BINTRAY_API_KEY') // Get bintray Secret Key
-    publications = ['library']
-    publish = true
-    override = true
-    pkg {
-        userOrg = bintrayOrg
-        repo = bintrayRepo
-        name = bintrayPackage
-        desc = bintrayPackageDesc
-        licenses = ['MIT']
-        vcsUrl = bintrayPackageVcsUrl
-        publicDownloadNumbers = true
-        version {
-            name = libraryVersion
-            released = new Date()
-        }
-    }
-}
+apply from: "${rootProject.projectDir}/sonatype-publish.gradle"
