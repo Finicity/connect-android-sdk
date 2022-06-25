@@ -91,6 +91,11 @@ class ConnectWebChromeClient extends WebChromeClient {
         final WebView popupView = new WebView(mConnect);
 
         popupView.getSettings().setJavaScriptEnabled(true);
+
+        // DOM storage API is required for some OAuth pages,
+        // for instance Citibank relies on it.
+        popupView.getSettings().setDomStorageEnabled(true);
+
         popupView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onCloseWindow(WebView window) {
